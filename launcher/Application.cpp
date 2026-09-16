@@ -648,7 +648,8 @@ Application::Application(int& argc, char** argv) : QApplication(argc, argv)
     // Initialize application settings
     {
         // Provide fallbacks for settings files used by earlier launchers.
-        m_settings.reset(new INISettingsObject({ BuildConfig.LAUNCHER_CONFIGFILE, "prismlauncher.cfg", "polymc.cfg", "multimc.cfg" }, this));
+        m_settings.reset(
+            new INISettingsObject({ BuildConfig.LAUNCHER_CONFIGFILE, "prismlauncher.cfg", "polymc.cfg", "multimc.cfg" }, this));
 
         // Theming
         m_settings->registerSetting("IconTheme", QString());

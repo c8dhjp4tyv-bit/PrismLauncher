@@ -387,12 +387,12 @@ if(NOT (UNIX AND APPLE))
 endif()
 
 if(UNIX AND APPLE)
-    set(BINARY_DEST_DIR "${Launcher_Name}.app/Contents/MacOS")
-    set(LIBRARY_DEST_DIR "${Launcher_Name}.app/Contents/MacOS")
-    set(PLUGIN_DEST_DIR "${Launcher_Name}.app/Contents/MacOS")
-    set(FRAMEWORK_DEST_DIR "${Launcher_Name}.app/Contents/Frameworks")
-    set(RESOURCES_DEST_DIR "${Launcher_Name}.app/Contents/Resources")
-    set(JARS_DEST_DIR "${Launcher_Name}.app/Contents/MacOS/jars")
+    set(BINARY_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/MacOS")
+    set(LIBRARY_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/MacOS")
+    set(PLUGIN_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/MacOS")
+    set(FRAMEWORK_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/Frameworks")
+    set(RESOURCES_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/Resources")
+    set(JARS_DEST_DIR "${Launcher_APP_BINARY_NAME}.app/Contents/MacOS/jars")
 
     # Mac bundle settings
     set(MACOSX_BUNDLE_BUNDLE_NAME "${Launcher_DisplayName}")

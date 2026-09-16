@@ -62,7 +62,7 @@ runs:
         cmake --install ${{ env.BUILD_DIR }} --config ${{ inputs.build-type }}
 
         cd ${{ env.INSTALL_DIR }}
-        chmod +x "TimelessLauncher.app/Contents/MacOS/timeless-launcher"
+        chmod +x "timeless-launcher.app/Contents/MacOS/timeless-launcher"
 
         if [ -n '${{ inputs.apple-codesign-id }}' ]; then
           APPLE_CODESIGN_ID='${{ inputs.apple-codesign-id }}'
@@ -72,8 +72,8 @@ runs:
           ENTITLEMENTS_FILE='../program_info/AdhocSignedApp.entitlements'
         fi
 
-        sudo codesign --sign "$APPLE_CODESIGN_ID" --deep --force --entitlements "$ENTITLEMENTS_FILE" --options runtime "TimelessLauncher.app/Contents/MacOS/timeless-launcher"
-        mv "TimelessLauncher.app" "Timeless Launcher.app"
+        sudo codesign --sign "$APPLE_CODESIGN_ID" --deep --force --entitlements "$ENTITLEMENTS_FILE" --options runtime "timeless-launcher.app/Contents/MacOS/timeless-launcher"
+        mv "timeless-launcher.app" "Timeless Launcher.app"
 
     - name: Notarize
       shell: bash

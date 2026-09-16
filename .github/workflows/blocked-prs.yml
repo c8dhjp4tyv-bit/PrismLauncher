@@ -18,6 +18,8 @@ permissions: {}
 
 jobs:
   blocked_status:
+    # This optional automation needs a separately configured GitHub App.
+    if: ${{ vars.PULL_REQUEST_APP_ID != '' }}
     name: Check Blocked Status
     runs-on: ubuntu-slim
 

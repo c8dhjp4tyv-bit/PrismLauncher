@@ -129,6 +129,15 @@ runs:
         }
         $sevenZipDirectory | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
+    # Qt modules share directories; concurrent 7-Zip processes can race on Windows.
+    - name: Configure serial Qt extraction
+      if: ${{ runner.os == 'Windows' && inputs.msystem == '' }}
+      shell: pwsh
+      run: |
+        $aqtConfig = Join-Path $env:RUNNER_TEMP 'aqt.ini'
+        "[aqt]`nconcurrency = 1" | Set-Content -Path $aqtConfig -Encoding utf8
+        "AQT_CONFIG=$aqtConfig" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
     - name: Install Qt
       if: ${{ inputs.msystem == '' }}
       uses: jurplel/install-qt-action@v4

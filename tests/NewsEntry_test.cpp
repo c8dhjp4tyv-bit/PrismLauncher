@@ -12,17 +12,14 @@ class NewsEntryTest : public QObject {
     {
         QTest::addColumn<QString>("xml");
         QTest::addColumn<QString>("expected");
-        QTest::newRow("github-release")
-            << "<entry><id>tag:github.com,2008:Repository/123/v1</id>"
-               "<link rel='alternate' type='text/html' href='https://example.com/releases/v1'/></entry>"
-            << "https://example.com/releases/v1";
-        QTest::newRow("default-alternate")
-            << "<entry><id>urn:uuid:123</id><link href='https://example.com/news'/></entry>"
-            << "https://example.com/news";
-        QTest::newRow("skip-self-link")
-            << "<entry><link rel='self' href='https://example.com/feed'/>"
-               "<link rel='alternate' href='https://example.com/news'/></entry>"
-            << "https://example.com/news";
+        QTest::newRow("github-release") << "<entry><id>tag:github.com,2008:Repository/123/v1</id>"
+                                           "<link rel='alternate' type='text/html' href='https://example.com/releases/v1'/></entry>"
+                                        << "https://example.com/releases/v1";
+        QTest::newRow("default-alternate") << "<entry><id>urn:uuid:123</id><link href='https://example.com/news'/></entry>"
+                                           << "https://example.com/news";
+        QTest::newRow("skip-self-link") << "<entry><link rel='self' href='https://example.com/feed'/>"
+                                           "<link rel='alternate' href='https://example.com/news'/></entry>"
+                                        << "https://example.com/news";
         QTest::newRow("legacy-id") << "<entry><id>https://example.com/legacy</id></entry>"
                                    << "https://example.com/legacy";
     }
