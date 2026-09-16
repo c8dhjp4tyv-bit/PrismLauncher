@@ -60,9 +60,15 @@ QString LanguageSelectionWidget::getSelectedLanguageKey() const
 
 void LanguageSelectionWidget::retranslate()
 {
-    QString text = tr("Don't see your language or the quality is poor?<br/><a href=\"%1\">Help us with translations!</a>")
-                       .arg(BuildConfig.TRANSLATIONS_URL);
-    helpUsLabel->setText(text);
+    if (BuildConfig.TRANSLATIONS_URL.isEmpty()) {
+        helpUsLabel->clear();
+        helpUsLabel->setVisible(false);
+    } else {
+        QString text = tr("Don't see your language or the quality is poor?<br/><a href=\"%1\">Help us with translations!</a>")
+                           .arg(BuildConfig.TRANSLATIONS_URL);
+        helpUsLabel->setText(text);
+        helpUsLabel->setVisible(true);
+    }
     formatCheckbox->setText(tr("Use system regional standards"));
 }
 

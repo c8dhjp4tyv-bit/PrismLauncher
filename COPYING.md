@@ -1,6 +1,9 @@
-## Prism Launcher
+## Timeless Launcher
 
-     Prism Launcher - Minecraft Launcher
+     Timeless Launcher - Minecraft Launcher
+     Copyright (C) 2026 Timeless Launcher Contributors
+
+     This distribution is an independently branded, modified fork of Prism Launcher.
      Copyright (C) 2022-2026 Prism Launcher Contributors
 
      This program is free software: you can redistribute it and/or modify

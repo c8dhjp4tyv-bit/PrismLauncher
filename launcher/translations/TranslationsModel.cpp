@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 /*
- *  Prism Launcher - Minecraft Launcher
+ *  Timeless Launcher - Minecraft Launcher
  *  Copyright (c) 2022 flowln <flowlnlnln@gmail.com>
  *  Copyright (C) 2022 Sefa Eyeoglu <contact@scrumplex.net>
  *
@@ -550,6 +550,10 @@ QString TranslationsModel::selectedLanguage() const
 
 void TranslationsModel::downloadIndex()
 {
+    if (BuildConfig.TRANSLATION_FILES_URL.isEmpty()) {
+        qInfo() << "Remote translation downloads are disabled for this build.";
+        return;
+    }
     if (d->m_indexJob || d->m_downloadJob) {
         return;
     }
@@ -584,6 +588,10 @@ void TranslationsModel::updateLanguage(const QString& key)
 
 void TranslationsModel::downloadTranslation(const QString& key)
 {
+    if (BuildConfig.TRANSLATION_FILES_URL.isEmpty()) {
+        qInfo() << "Remote translation downloads are disabled for this build.";
+        return;
+    }
     if (d->m_downloadJob) {
         d->m_nextDownload = key;
         return;

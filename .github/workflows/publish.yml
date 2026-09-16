@@ -10,6 +10,10 @@ jobs:
   winget:
     name: Winget
 
+    # Set TIMELESSLAUNCHER_WINGET_ID after the package has been accepted by
+    # WinGet. Keeping this unset prevents publishing under an unverified ID.
+    if: ${{ vars.TIMELESSLAUNCHER_WINGET_ID != '' }}
+
     permissions:
       contents: read
 
@@ -20,7 +24,7 @@ jobs:
         # @Octol1ttle: Pinned to a commit because no release has been published that works on ubuntu-slim
         uses: vedantmgoyal2009/winget-releaser@7bd472be23763def6e16bd06cc8b1cdfab0e2fd5 # docs: add description to inputs (#335)
         with:
-          identifier: PrismLauncher.PrismLauncher
+          identifier: ${{ vars.TIMELESSLAUNCHER_WINGET_ID }}
           version: ${{ github.event.release.tag_name }}
-          installers-regex: 'PrismLauncher-Windows-MSVC(:?-arm64|-Legacy)?-Setup-.+\.exe$'
+          installers-regex: 'TimelessLauncher-Windows-MSVC(:?-arm64|-Legacy)?-Setup-.+\.exe$'
           token: ${{ secrets.WINGET_TOKEN }}

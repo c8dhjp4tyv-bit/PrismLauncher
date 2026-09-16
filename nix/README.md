@@ -1,219 +1,75 @@
-# Prism Launcher Nix Packaging
+# Timeless Launcher Nix packaging
 
-## Installing a stable release (nixpkgs)
+The flake exposes a wrapped package and a minimal package for Linux and macOS.
+The repository does not configure a binary cache or trusted signing key; use
+your own cache only after reviewing and trusting its operator.
 
-Prism Launcher is packaged in [nixpkgs](https://github.com/NixOS/nixpkgs/) since 22.11.
+## Flake usage
 
-Check the [NixOS Wiki](https://wiki.nixos.org/wiki/Prism_Launcher) for up-to-date instructions.
-
-## Installing a development release (flake)
-
-We use [cachix](https://cachix.org/) to cache our development and release builds.
-If you want to avoid rebuilds you may add the Cachix bucket to your substitutors, or use `--accept-flake-config`
-to temporarily enable it when using `nix` commands.
-
-Example (NixOS):
+Add the repository as an input:
 
 ```nix
 {
-  nix.settings = {
-    trusted-substituters = [ "https://prismlauncher.cachix.org" ];
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.timeless-launcher.url = "github:c8dhjp4tyv-bit/timeless-launcher";
 
-    trusted-public-keys = [
-      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
-    ];
-  };
-}
-```
-
-### Installing the package directly
-
-After adding `github:PrismLauncher/PrismLauncher` to your flake inputs, you can access the flake's `packages` output.
-
-Example:
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-    prismlauncher = {
-      url = "github:PrismLauncher/PrismLauncher";
-
-      # Optional: Override the nixpkgs input of prismlauncher to use the same revision as the rest of your flake
-      # Note that this may break the reproducibility mentioned above, and you might not be able to access the binary cache
-      #
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs =
-    { nixpkgs, prismlauncher, ... }:
+  outputs = { nixpkgs, timeless-launcher, ... }:
     {
-      nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
         modules = [
-          ./configuration.nix
-
-          (
-            { pkgs, ... }:
-            {
-              environment.systemPackages = [ prismlauncher.packages.${pkgs.system}.prismlauncher ];
-            }
-          )
+          ({ pkgs, ... }: {
+            environment.systemPackages = [
+              timeless-launcher.packages.${pkgs.system}.timeless-launcher
+            ];
+          })
         ];
       };
     };
 }
 ```
 
-### Using the overlay
+For an ad-hoc install:
 
-Alternatively, if you don't want to use our `packages` output, you can add our overlay to your nixpkgs instance.
-This will ensure Prism is built with your system's packages.
+```sh
+nix run github:c8dhjp4tyv-bit/timeless-launcher
+nix shell github:c8dhjp4tyv-bit/timeless-launcher
+nix profile install github:c8dhjp4tyv-bit/timeless-launcher
+```
 
-> [!WARNING]
-> Depending on what revision of nixpkgs your system uses, this may result in binaries that differ from the above `packages` output
-> If this is the case, you will not be able to use the binary cache
-
-Example:
+The overlay provides the same packages through `pkgs`:
 
 ```nix
 {
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-    prismlauncher = {
-      url = "github:PrismLauncher/PrismLauncher";
-
-      # Optional: Override the nixpkgs input of prismlauncher to use the same revision as the rest of your flake
-      # Note that this may break the reproducibility mentioned above, and you might not be able to access the binary cache
-      #
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-
-  outputs =
-    { nixpkgs, prismlauncher, ... }:
-    {
-      nixosConfigurations.foo = nixpkgs.lib.nixosSystem {
-        modules = [
-          ./configuration.nix
-
-          (
-            { pkgs, ... }:
-            {
-              nixpkgs.overlays = [ prismlauncher.overlays.default ];
-
-              environment.systemPackages = [ pkgs.prismlauncher ];
-            }
-          )
-        ];
-      };
-    };
+  nixpkgs.overlays = [ timeless-launcher.overlays.default ];
+  environment.systemPackages = [ pkgs.timeless-launcher ];
 }
 ```
 
-### Installing the package ad-hoc (`nix shell`, `nix run`, etc.)
+## Local development
 
-You can simply call the default package of this flake.
+Enter the development shell with:
 
-Example:
-
-```shell
-nix run github:PrismLauncher/PrismLauncher
-
-nix shell github:PrismLauncher/PrismLauncher
-
-nix profile install github:PrismLauncher/PrismLauncher
+```sh
+nix develop
 ```
 
-## Installing a development release (without flakes)
+The shell configures a debug CMake/Ninja build and initializes the required
+submodules. To build directly:
 
-We use [Cachix](https://cachix.org/) to cache our development and release builds.
-If you want to avoid rebuilds you may add the Cachix bucket to your substitutors.
-
-Example (NixOS):
-
-```nix
-{
-  nix.settings = {
-    trusted-substituters = [ "https://prismlauncher.cachix.org" ];
-
-    trusted-public-keys = [
-      "prismlauncher.cachix.org-1:9/n/FGyABA2jLUVfY+DEp4hKds/rwO+SCOtbOkDzd+c="
-    ];
-  };
-}
-```
-
-### Installing the package directly (`fetchTarball`)
-
-We use flake-compat to allow using this Flake on a system that doesn't use flakes.
-
-Example:
-
-```nix
-{ pkgs, ... }:
-{
-  environment.systemPackages = [
-    (import (
-      builtins.fetchTarball "https://github.com/PrismLauncher/PrismLauncher/archive/develop.tar.gz"
-    )).packages.${pkgs.system}.prismlauncher
-  ];
-}
-```
-
-### Using the overlay (`fetchTarball`)
-
-Alternatively, if you don't want to use our `packages` output, you can add our overlay to your instance of nixpkgs.
-This results in Prism using your system's libraries
-
-Example:
-
-```nix
-{ pkgs, ... }:
-{
-  nixpkgs.overlays = [
-    (import (
-      builtins.fetchTarball "https://github.com/PrismLauncher/PrismLauncher/archive/develop.tar.gz"
-    )).overlays.default
-  ];
-
-  environment.systemPackages = [ pkgs.prismlauncher ];
-}
-```
-
-### Installing the package ad-hoc (`nix-env`)
-
-You can add this repository as a channel and install its packages that way.
-
-Example:
-
-```shell
-nix-channel --add https://github.com/PrismLauncher/PrismLauncher/archive/develop.tar.gz prismlauncher
-
-nix-channel --update prismlauncher
-
-nix-env -iA prismlauncher.prismlauncher
+```sh
+nix build .#timeless-launcher
+nix build .#timeless-launcher-unwrapped
+nix build .#timeless-launcher-debug
 ```
 
 ## Package variants
 
-Both Nixpkgs and this repository offer the following packages:
+- `timeless-launcher`: wrapped runtime with the libraries and Java runtimes commonly needed to run Minecraft.
+- `timeless-launcher-unwrapped`: minimal package for advanced runtime customization.
+- `timeless-launcher-debug`: unstripped debug package for CI and diagnostics.
 
-- `prismlauncher` - The preferred build, wrapped with everything necessary to run the launcher and Minecraft
-- `prismlauncher-unwrapped` - A minimal build that allows for advanced customization of the launcher's runtime environment
-
-### Customizing wrapped packages
-
-The wrapped package (`prismlauncher`) offers some build parameters to further customize the launcher's environment.
-
-The following parameters can be overridden:
-
-- `additionalLibs` (default: `[ ]`) Additional libraries that will be added to `LD_LIBRARY_PATH`
-- `additionalPrograms` (default: `[ ]`) Additional libraries that will be added to `PATH`
-- `controllerSupport` (default: `isLinux`) Turn on/off support for controllers on Linux (macOS will always have this)
-- `gamemodeSupport` (default: `isLinux`) Turn on/off support for [Feral GameMode](https://github.com/FeralInteractive/gamemode) on Linux
-- `jdks` (default: `[ jdk21 jdk17 jdk8 ]`) Java runtimes added to `PRISMLAUNCHER_JAVA_PATHS` variable
-- `msaClientID` (default: `null`, requires full rebuild!) Client ID used for Microsoft Authentication
-- `textToSpeechSupport` (default: `isLinux`) Turn on/off support for text-to-speech on Linux (macOS will always have this)
+The wrapped package accepts `additionalLibs`, `additionalPrograms`,
+`controllerSupport`, `gamemodeSupport`, `jdks`, `msaClientID` and
+`textToSpeechSupport` overrides. Microsoft authentication remains disabled
+unless a maintainer supplies a client ID through the build configuration.
