@@ -180,7 +180,7 @@ endif()
 ##################################### Set Application options #####################################
 
 ######## Set URLs ########
-set(Launcher_PROJECT_URL "https://github.com/c8dhjp4tyv-bit/PrismLauncher" CACHE STRING "Canonical project URL")
+set(Launcher_PROJECT_URL "https://github.com/c8dhjp4tyv-bit/timeless-launcher" CACHE STRING "Canonical project URL")
 set(Launcher_NEWS_RSS_URL "${Launcher_PROJECT_URL}/releases.atom" CACHE STRING "URL to fetch Timeless Launcher's news RSS feed from.")
 set(Launcher_NEWS_OPEN_URL "${Launcher_PROJECT_URL}/releases" CACHE STRING "URL that gets opened when the user clicks 'More News'")
 set(Launcher_WIKI_URL "${Launcher_PROJECT_URL}/wiki/" CACHE STRING "URL that gets opened when the user clicks 'Launcher Help'")

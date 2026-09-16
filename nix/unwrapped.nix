@@ -120,12 +120,10 @@ stdenv.mkDerivation {
       their own mods, texture packs, saves, etc) and helps you manage them and
       their associated options with a simple interface.
     '';
-    homepage = "https://github.com/c8dhjp4tyv-bit/PrismLauncher";
+    homepage = "https://github.com/c8dhjp4tyv-bit/timeless-launcher";
     license = lib.licenses.gpl3Only;
-    maintainers = with lib.maintainers; [
-      Scrumplex
-      getchoo
-    ];
+    # The upstream nixpkgs maintainers do not maintain this fork's package.
+    maintainers = [ ];
     mainProgram = "timeless-launcher";
     platforms = lib.platforms.linux ++ lib.platforms.darwin;
   };

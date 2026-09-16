@@ -7,7 +7,7 @@
 Timeless Launcher is an independently branded, GPL-3.0-only fork of Prism Launcher for managing isolated Minecraft installations. It is not affiliated with or endorsed by Prism Launcher.
 
 Project repository:
-<https://github.com/c8dhjp4tyv-bit/PrismLauncher>
+<https://github.com/c8dhjp4tyv-bit/timeless-launcher>
 
 ## Highlights
 
@@ -19,14 +19,14 @@ Project repository:
 ## Install
 
 Once releases are published, downloads will be available from the project's
-[Releases](https://github.com/c8dhjp4tyv-bit/PrismLauncher/releases) page. Development builds, if enabled by the maintainers, are published by the repository's GitHub Actions workflows and are intended for testing.
+[Releases](https://github.com/c8dhjp4tyv-bit/timeless-launcher/releases) page. Development builds, if enabled by the maintainers, are published by the repository's GitHub Actions workflows and are intended for testing.
 
 ## Build from source
 
 The project uses CMake, Qt 6 and Ninja. A typical local build is:
 
 ```sh
-git clone https://github.com/c8dhjp4tyv-bit/PrismLauncher.git TimelessLauncher
+git clone https://github.com/c8dhjp4tyv-bit/timeless-launcher.git TimelessLauncher
 cd TimelessLauncher
 git submodule update --init --recursive
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release

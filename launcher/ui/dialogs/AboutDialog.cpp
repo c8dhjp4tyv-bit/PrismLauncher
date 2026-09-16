@@ -54,7 +54,9 @@ QString getCreditsHtml()
     QString fileContent = QString::fromUtf8(dataFile.readAll());
     dataFile.close();
 
-    return fileContent.arg(QObject::tr("%1 Developers").arg(BuildConfig.LAUNCHER_DISPLAYNAME), QObject::tr("MultiMC Developers"),
+    // The people listed below worked on the projects this fork is derived from, so they are
+    // credited under those projects' names rather than under this launcher's name.
+    return fileContent.arg(QObject::tr("Prism Launcher Developers"), QObject::tr("MultiMC Developers"),
                            QObject::tr("With special thanks to"));
 }
 

@@ -11,7 +11,7 @@ Add the repository as an input:
 ```nix
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.timeless-launcher.url = "github:c8dhjp4tyv-bit/PrismLauncher";
+  inputs.timeless-launcher.url = "github:c8dhjp4tyv-bit/timeless-launcher";
 
   outputs = { nixpkgs, timeless-launcher, ... }:
     {
@@ -32,9 +32,9 @@ Add the repository as an input:
 For an ad-hoc install:
 
 ```sh
-nix run github:c8dhjp4tyv-bit/PrismLauncher
-nix shell github:c8dhjp4tyv-bit/PrismLauncher
-nix profile install github:c8dhjp4tyv-bit/PrismLauncher
+nix run github:c8dhjp4tyv-bit/timeless-launcher
+nix shell github:c8dhjp4tyv-bit/timeless-launcher
+nix profile install github:c8dhjp4tyv-bit/timeless-launcher
 ```
 
 The overlay provides the same packages through `pkgs`:
