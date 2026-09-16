@@ -96,7 +96,7 @@
             ```
 
             Please use the issue tracker for project questions and support:
-              - https://github.com/c8dhjp4tyv-bit/TimelessLauncher/issues
+              - https://github.com/c8dhjp4tyv-bit/PrismLauncher/issues
 
             And thanks for helping out :)
           '';
