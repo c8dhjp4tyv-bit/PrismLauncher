@@ -10,7 +10,7 @@ permissions: {}
 
 jobs:
   update-flake:
-    if: github.repository == 'PrismLauncher/PrismLauncher'
+    if: github.repository == 'c8dhjp4tyv-bit/TimelessLauncher'
 
     permissions:
       contents: write

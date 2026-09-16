@@ -1,6 +1,6 @@
 #pragma once
-#ifndef PRISM_PRECOMPILED_BASE_HEADERS_H
-#define PRISM_PRECOMPILED_BASE_HEADERS_H
+#ifndef TIMELESS_PRECOMPILED_BASE_HEADERS_H
+#define TIMELESS_PRECOMPILED_BASE_HEADERS_H
 
 #include <algorithm>
 #include <cstddef>
@@ -14,4 +14,4 @@
 #include <Json.h>
 #include <Version.h>
 
-#endif  // PRISM_PRECOMPILED_BASE_HEADERS_H
+#endif  // TIMELESS_PRECOMPILED_BASE_HEADERS_H

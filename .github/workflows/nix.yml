@@ -108,14 +108,6 @@ jobs:
           diagnostic-endpoint: ""
           use-flakehub: false
 
-        # For in-tree builds
-      - name: Setup Cachix
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-        uses: cachix/cachix-action@v17
-        with:
-          name: prismlauncher
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-
       - name: Run Flake checks
         run: |
           nix flake check --print-build-logs --show-trace
@@ -125,14 +117,10 @@ jobs:
         run: |
           nix build \
             --no-link --print-build-logs --print-out-paths \
-            .#prismlauncher-debug >> "$GITHUB_STEP_SUMMARY"
+            .#timeless-launcher-debug >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build release package
         if: ${{ env.DEBUG == 'false' }}
-        env:
-          TAG: ${{ github.ref_name }}
-          SYSTEM: ${{ matrix.system }}
         run: |
-          nix build --no-link --print-out-paths .#prismlauncher \
-            | tee -a "$GITHUB_STEP_SUMMARY" \
-            | xargs cachix pin prismlauncher "$TAG"-"$SYSTEM"
+          nix build --no-link --print-out-paths .#timeless-launcher \
+            | tee -a "$GITHUB_STEP_SUMMARY"

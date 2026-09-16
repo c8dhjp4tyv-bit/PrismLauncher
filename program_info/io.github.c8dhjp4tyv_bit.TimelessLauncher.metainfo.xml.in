@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>@Launcher_AppID@</id>
+  <name>Timeless Launcher</name>
+  <summary>A focused Minecraft launcher for managing isolated instances</summary>
+  <developer id="@Launcher_AppID@">
+    <name>Timeless Launcher Contributors</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <description>
+    <p>Timeless Launcher is an independently branded fork of Prism Launcher for managing multiple Minecraft installations.</p>
+    <p>Each instance can have its own mods, worlds, resource packs, Java settings and launch options. The launcher supports installing loaders, importing modpacks, reviewing logs and customizing the interface.</p>
+    <p>Timeless Launcher is not affiliated with or endorsed by Prism Launcher or Microsoft.</p>
+  </description>
+  <releases>
+    <release version="@Launcher_VERSION_NAME@" date="@Launcher_BUILD_TIMESTAMP@" />
+  </releases>
+  <url type="homepage">@Launcher_Git@</url>
+  <url type="bugtracker">@Launcher_Git@/issues</url>
+  <url type="help">@Launcher_Git@/wiki/</url>
+  <url type="vcs-browser">@Launcher_Git@</url>
+  <url type="contribute">@Launcher_Git@/blob/develop/CONTRIBUTING.md</url>
+  <launchable type="desktop-id">@Launcher_AppID@.desktop</launchable>
+</component>
