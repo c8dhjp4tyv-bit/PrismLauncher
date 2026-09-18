@@ -113,17 +113,22 @@ DeviceAuthorizationResponse parseDeviceAuthorizationResponse(const QByteArray& d
 
 void MSADeviceCodeStep::deviceAuthorizationFinished(QByteArray* response)
 {
-    if (!m_request->wasSuccessful() || m_request->error() != QNetworkReply::NoError) {
-        qWarning() << "Device authorization failed:" << m_request->error() << m_request->errorString();
-        emit finished(AccountTaskState::STATE_FAILED_HARD, tr("Device authorization failed: %1").arg(m_request->errorString()));
+    // Microsoft answers a rejected request with HTTP 400 and a JSON body naming the reason, and Qt
+    // reports any 4xx as a transport error. So read the body first, the way authenticationFinished()
+    // below already does - checking the transport error first makes the branch under it unreachable
+    // for exactly the responses that explain what went wrong, and the user is told no more than
+    // "server replied: Bad Request".
+    auto rsp = response->isEmpty() ? DeviceAuthorizationResponse{} : parseDeviceAuthorizationResponse(*response);
+    if (!rsp.error.isEmpty() || !rsp.error_description.isEmpty()) {
+        qWarning() << "Device authorization failed:" << rsp.error << rsp.error_description;
+        emit finished(AccountTaskState::STATE_FAILED_HARD,
+                      tr("Device authorization failed: %1").arg(rsp.error_description.isEmpty() ? rsp.error : rsp.error_description));
         return;
     }
 
-    auto rsp = parseDeviceAuthorizationResponse(*response);
-    if (!rsp.error.isEmpty() || !rsp.error_description.isEmpty()) {
-        qWarning() << "Device authorization failed:" << rsp.error;
-        emit finished(AccountTaskState::STATE_FAILED_HARD,
-                      tr("Device authorization failed: %1").arg(rsp.error_description.isEmpty() ? rsp.error : rsp.error_description));
+    if (!m_request->wasSuccessful() || m_request->error() != QNetworkReply::NoError) {
+        qWarning() << "Device authorization failed:" << m_request->error() << m_request->errorString();
+        emit finished(AccountTaskState::STATE_FAILED_HARD, tr("Device authorization failed: %1").arg(m_request->errorString()));
         return;
     }
     if (rsp.device_code.isEmpty() || rsp.user_code.isEmpty() || rsp.verification_uri.isEmpty() || rsp.expires_in == 0) {
