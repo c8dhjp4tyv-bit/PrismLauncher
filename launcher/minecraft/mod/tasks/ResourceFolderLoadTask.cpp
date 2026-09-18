@@ -72,6 +72,10 @@ void ResourceFolderLoadTask::executeTask()
     // Read JAR files that don't have metadata
     m_resource_dir.refresh();
     for (auto entry : m_resource_dir.entryInfoList()) {
+        if (m_aborted) {
+            break;
+        }
+
         auto filePath = entry.absoluteFilePath();
         if (auto* app = APPLICATION_DYN; (app != nullptr) && app->checkQSavePath(filePath)) {
             continue;
@@ -114,7 +118,9 @@ void ResourceFolderLoadTask::executeTask()
 
     // Remove orphan metadata to prevent issues
     // See https://github.com/PolyMC/PolyMC/issues/996
-    if (m_clean_orphan) {
+    // Never on an aborted run: the scan above decides what counts as installed, so a half-finished
+    // one would report resources as orphans and destroy metadata that is perfectly good.
+    if (m_clean_orphan && !m_aborted) {
         QMutableMapIterator iter(m_result->resources);
         while (iter.hasNext()) {
             auto resource = iter.next().value();
@@ -126,7 +132,9 @@ void ResourceFolderLoadTask::executeTask()
     }
 
     if (m_aborted) {
-        emit finished();
+        // Not a bare finished(): the state has to leave Running, otherwise anything waiting on
+        // isRunning() after asking us to stop waits for good.
+        emitAborted();
     } else {
         emitSucceeded();
     }
@@ -136,6 +144,10 @@ void ResourceFolderLoadTask::getFromMetadata()
 {
     m_index_dir.refresh();
     for (const auto& entry : m_index_dir.entryList(QDir::Files)) {
+        if (m_aborted) {
+            return;
+        }
+
         if (!entry.endsWith(".pw.toml")) {
             continue;
         }
