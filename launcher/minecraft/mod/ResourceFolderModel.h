@@ -253,6 +253,9 @@ class ResourceFolderModel : public QAbstractListModel {
     bool m_firstFolderLoad = true;
 
     Task::Ptr m_currentUpdateTask = nullptr;
+    /** What was actually handed to the thread pool: m_currentUpdateTask itself, or a SequentialTask
+     *  wrapping it when there is a pre-update step. Held so the destructor can wait for it. */
+    Task::Ptr m_startedUpdateTask = nullptr;
     bool m_scheduledUpdate = false;
 
     QList<Resource::Ptr> m_resources;

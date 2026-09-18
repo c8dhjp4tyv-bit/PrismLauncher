@@ -51,6 +51,35 @@ ResourceFolderModel::ResourceFolderModel(const QDir& dir, MinecraftInstance* ins
 
 ResourceFolderModel::~ResourceFolderModel()
 {
+    // The update task runs on the global thread pool and reaches back into this model through the
+    // callback that builds resources, so it has to be stopped before anything it touches goes away.
+    // Destroying the model mid-update used to leave that task running against freed members, and
+    // because Task::Ptr deletes through deleteLater the task object itself could be freed while the
+    // pool was still inside executeTask() - which showed up as std::bad_function_call.
+    if (auto started = m_startedUpdateTask) {
+        // Nothing may call back into a model that is being destroyed, and the finished handler would
+        // otherwise start the update that was queued behind this one.
+        m_scheduledUpdate = false;
+        disconnect(started.get(), nullptr, this, nullptr);
+        if (m_currentUpdateTask) {
+            disconnect(m_currentUpdateTask.get(), nullptr, this, nullptr);
+        }
+
+        // If it never left the queue we can simply take it back; otherwise ask it to stop and wait
+        // for the pool to actually leave it.
+        if (!QThreadPool::globalInstance()->tryTake(started.get())) {
+            started->abort();
+
+            auto current = m_currentUpdateTask;
+            while (started->isRunning() || (current && current->isRunning())) {
+                QThread::msleep(10);
+            }
+        }
+
+        m_startedUpdateTask.reset();
+        m_currentUpdateTask.reset();
+    }
+
     m_resourceResolverThread.quit();
     while (!m_resourceResolverThread.wait(100)) {
         QCoreApplication::processEvents();
@@ -358,17 +387,23 @@ bool ResourceFolderModel::update()
     Task::Ptr preUpdate{ createPreUpdateTask() };
 
     if (preUpdate != nullptr) {
-        auto* task = new SequentialTask("ResourceFolderModel::update");
+        auto sequential = makeShared<SequentialTask>("ResourceFolderModel::update");
 
-        task->addTask(preUpdate);
-        task->addTask(m_currentUpdateTask);
+        sequential->addTask(preUpdate);
+        sequential->addTask(m_currentUpdateTask);
 
-        connect(task, &Task::finished, task, &Task::deleteLater);
-
-        QThreadPool::globalInstance()->start(task);
+        m_startedUpdateTask = sequential;
     } else {
-        QThreadPool::globalInstance()->start(m_currentUpdateTask.get());
+        m_startedUpdateTask = m_currentUpdateTask;
     }
+
+    // Keep a reference until whatever we start is done with itself. The destructor needs it to wait
+    // on the thread pool, and dropping it early would hand the pool a task it no longer owns.
+    connect(
+        m_startedUpdateTask.get(), &Task::finished, this, [this] { m_startedUpdateTask.reset(); },
+        Qt::ConnectionType::QueuedConnection);
+
+    QThreadPool::globalInstance()->start(m_startedUpdateTask.get());
 
     return true;
 }
